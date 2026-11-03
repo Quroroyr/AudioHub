@@ -1,7 +1,6 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
-using Windows.UI.ViewManagement;
 
 namespace AudioHub;
 
@@ -19,17 +18,9 @@ public static class Theme
     public static void Apply(ResourceDictionary resources)
     {
         var light = AppsUseLight;
-        Color accent;
-        try
-        {
-            var settings = new UISettings();
-            var value = settings.GetColorValue(light ? UIColorType.AccentDark1 : UIColorType.AccentLight2);
-            accent = Color.FromArgb(value.A, value.R, value.G, value.B);
-        }
-        catch (Exception)
-        {
-            accent = light ? Color.FromRgb(0x00, 0x5F, 0xB8) : Color.FromRgb(0x60, 0xCD, 0xFF);
-        }
+        // Как в Windows 11: на светлой теме — затемнённый акцент, на тёмной — осветлённый.
+        var accent = ReadAccent(light ? AccentDark1 : AccentLight2)
+                     ?? (light ? Color.FromRgb(0x00, 0x5F, 0xB8) : Color.FromRgb(0x60, 0xCD, 0xFF));
 
         if (light)
         {
@@ -67,6 +58,19 @@ public static class Theme
     {
         brush.Freeze();
         return brush;
+    }
+
+    // AccentPalette — 8 цветов RGBA: Light3, Light2, Light1, Accent, Dark1, Dark2, Dark3, запасной.
+    private const int AccentLight2 = 1;
+    private const int AccentDark1 = 4;
+
+    /// <summary>Оттенок акцентного цвета из реестра — то же, что отдаёт UISettings, но без WinRT.</summary>
+    private static Color? ReadAccent(int index)
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent");
+        if (key?.GetValue("AccentPalette") is not byte[] palette || palette.Length < (index + 1) * 4) return null;
+        var offset = index * 4;
+        return Color.FromRgb(palette[offset], palette[offset + 1], palette[offset + 2]);
     }
 
     private static bool ReadFlag(string name, bool fallback)
