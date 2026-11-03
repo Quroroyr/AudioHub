@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Native P/Invoke only; no WinRT projections or Windows SDK NuGet download. -->
+    <IncludeWindowsSDKRefFrameworkReferences>false</IncludeWindowsSDKRefFrameworkReferences>
+    <DisableTransitiveFrameworkReferenceDownloads>true</DisableTransitiveFrameworkReferenceDownloads>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\AudioHub\Audio\IAppRouting.cs" Link="Audio\IAppRouting.cs" />
+    <Compile Include="..\..\src\AudioHub\Audio\AppRouting.cs" Link="Audio\AppRouting.cs" />
+    <Compile Include="..\..\src\AudioHub\Audio\Interop\AudioPolicyConfig.cs" Link="Audio\Interop\AudioPolicyConfig.cs" />
+  </ItemGroup>
+</Project>
