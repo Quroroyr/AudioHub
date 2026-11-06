@@ -40,8 +40,8 @@ public sealed class TrayIcon : IDisposable
         {
             if (e.Button == Forms.MouseButtons.Left) onLeftClick();
         };
-        Update(null, force: true);
-        _icon.Visible = true;
+        // Значок показываем в первом Update, когда устройство уже известно: Windows запоминает подсказку,
+        // с которой значок впервые появился, и иначе держала бы в трее «нет устройств вывода».
     }
 
     /// <summary>Перерисовать под текущую громкость основного устройства.</summary>
@@ -63,6 +63,7 @@ public sealed class TrayIcon : IDisposable
         var previous = _iconHandle;
         _icon.Icon = RenderGlyph(glyph, light ? Color.Black : Color.White, out _iconHandle);
         if (previous != IntPtr.Zero) Native.DestroyIcon(previous);
+        _icon.Visible = true;
     }
 
     public void Dispose()
